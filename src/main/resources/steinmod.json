@@ -3,7 +3,7 @@
   "name": "YNYDamageIndicator",
   "version": "1.0.0",
   "author": "Artur",
-  "description": "Shows the name and health of the living entity under the crosshair.",
+  "description": "Mostra na HUD o nome e a vida do alvo sob a mira.",
   "entry": "com.yny.targethealth.TargetHealthMod",
   "loader": "0.1.13"
 }

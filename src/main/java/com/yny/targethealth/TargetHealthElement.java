@@ -122,7 +122,7 @@ final class TargetHealthElement implements HudElement {
 
     @Override
     public String name() {
-        return "Target health";
+        return "Vida do alvo";
     }
 
     @Override

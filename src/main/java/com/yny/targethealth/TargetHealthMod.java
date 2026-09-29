@@ -8,8 +8,8 @@ import dev.xavier.stein.loader.api.SteinMod;
 public final class TargetHealthMod implements SteinMod {
 
     static final String ID = "ynydamageindicator";
-    private static final String[] RANGES = {"8 blocks", "16 blocks", "32 blocks", "48 blocks", "64 blocks"};
-    private static final String[] OPACITIES = {"Low", "Medium", "High", "Solid"};
+    private static final String[] RANGES = {"8 blocos", "16 blocos", "32 blocos", "48 blocos", "64 blocos"};
+    private static final String[] OPACITIES = {"Baixa", "Média", "Alta", "Sólida"};
     static Settings settings = new Settings();
 
     private final TargetHealthElement element = new TargetHealthElement();
@@ -27,51 +27,51 @@ public final class TargetHealthMod implements SteinMod {
 
     @Override
     public void onPage(Page page) {
-        page.title("YNYDamageIndicator")
-            .section("Display")
-            .option(Option.toggle("Enable indicator", () -> settings.enabled, value -> {
+        page.title("YNY Damage Indicator")
+            .section("Exibição")
+            .option(Option.toggle("Ativar indicador", () -> settings.enabled, value -> {
                 settings.enabled = value;
                 Settings.save(settings);
             }))
-            .option(Option.toggle("Show target name", () -> settings.showName, value -> {
+            .option(Option.toggle("Mostrar nome do alvo", () -> settings.showName, value -> {
                 settings.showName = value;
                 Settings.save(settings);
             }))
-            .option(Option.toggle("Show numeric health", () -> settings.showNumbers, value -> {
+            .option(Option.toggle("Mostrar vida em números", () -> settings.showNumbers, value -> {
                 settings.showNumbers = value;
                 Settings.save(settings);
             }))
-            .option(Option.toggle("Show absorption hearts", () -> settings.showAbsorption, value -> {
+            .option(Option.toggle("Mostrar absorção", () -> settings.showAbsorption, value -> {
                 settings.showAbsorption = value;
                 Settings.save(settings);
             }))
-            .section("Targeting")
-            .option(Option.toggle("Show distant targets", () -> settings.showDistantTargets, value -> {
+            .section("Alvos")
+            .option(Option.toggle("Mostrar alvos distantes", () -> settings.showDistantTargets, value -> {
                 settings.showDistantTargets = value;
                 Settings.save(settings);
             }))
-            .option(Option.cycle("Visual range", RANGES, () -> settings.rangeIndex, value -> {
+            .option(Option.cycle("Alcance visual", RANGES, () -> settings.rangeIndex, value -> {
                 settings.rangeIndex = value;
                 Settings.save(settings);
             }))
-            .option(Option.toggle("Ignore leaves", () -> settings.ignoreLeaves, value -> {
+            .option(Option.toggle("Ignorar folhas", () -> settings.ignoreLeaves, value -> {
                 settings.ignoreLeaves = value;
                 Settings.save(settings);
             }))
-            .section("Appearance")
-            .option(Option.color("Accent color", () -> settings.accentColor, value -> {
+            .section("Aparência")
+            .option(Option.color("Cor de destaque", () -> settings.accentColor, value -> {
                 settings.accentColor = value;
                 Settings.save(settings);
             }))
-            .option(Option.toggle("Dynamic health color", () -> settings.dynamicHealthColor, value -> {
+            .option(Option.toggle("Cor de vida dinâmica", () -> settings.dynamicHealthColor, value -> {
                 settings.dynamicHealthColor = value;
                 Settings.save(settings);
             }))
-            .option(Option.color("Health color", () -> settings.healthColor, value -> {
+            .option(Option.color("Cor da vida", () -> settings.healthColor, value -> {
                 settings.healthColor = value;
                 Settings.save(settings);
             }))
-            .option(Option.cycle("Background opacity", OPACITIES, () -> settings.opacityIndex, value -> {
+            .option(Option.cycle("Opacidade do fundo", OPACITIES, () -> settings.opacityIndex, value -> {
                 settings.opacityIndex = value;
                 Settings.save(settings);
             }))
