@@ -1,0 +1,9 @@
+{
+  "id": "ynydamageindicator",
+  "name": "YNYDamageIndicator",
+  "version": "1.0.0",
+  "author": "Artur",
+  "description": "Shows the name and health of the living entity under the crosshair.",
+  "entry": "com.yny.targethealth.TargetHealthMod",
+  "loader": "0.1.13"
+}
