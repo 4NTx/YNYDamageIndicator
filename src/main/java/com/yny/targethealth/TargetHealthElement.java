@@ -6,7 +6,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockBush;
 import net.minecraft.block.BlockLeaves;
+import net.minecraft.block.BlockVine;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.AxisAlignedBB;
@@ -85,13 +87,17 @@ final class TargetHealthElement implements HudElement {
                 return range;
             }
             Block block = mc.theWorld.getBlockState(hit.getBlockPos()).getBlock();
-            if (!TargetHealthMod.settings.ignoreLeaves || !(block instanceof BlockLeaves)) {
+            if (!TargetHealthMod.settings.ignoreLeaves || !isFoliage(block)) {
                 return start.distanceTo(hit.hitVec);
             }
             origin = hit.hitVec.addVector(direction.xCoord * 0.01D, direction.yCoord * 0.01D,
                     direction.zCoord * 0.01D);
         }
         return range;
+    }
+
+    private static boolean isFoliage(Block block) {
+        return block instanceof BlockLeaves || block instanceof BlockBush || block instanceof BlockVine;
     }
 
     void updateTarget() {

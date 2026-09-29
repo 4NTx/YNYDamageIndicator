@@ -54,7 +54,7 @@ public final class TargetHealthMod implements SteinMod {
                 settings.rangeIndex = value;
                 Settings.save(settings);
             }))
-            .option(Option.toggle("Ignorar folhas", () -> settings.ignoreLeaves, value -> {
+            .option(Option.toggle("Ignorar folhagem", () -> settings.ignoreLeaves, value -> {
                 settings.ignoreLeaves = value;
                 Settings.save(settings);
             }))
