@@ -37,6 +37,7 @@ final class TargetHealthElement implements HudElement {
     private float maximum = 20.0F;
     private float absorption;
     private EntityLivingBase distantTarget;
+    private int scanCooldown;
 
     void updateDistantTarget() {
         Minecraft mc = Minecraft.getMinecraft();
@@ -48,8 +49,18 @@ final class TargetHealthElement implements HudElement {
             distantTarget = null;
             return;
         }
+        if (directTarget(mc) != null) {
+            distantTarget = null;
+            scanCooldown = 0;
+            return;
+        }
+        if (scanCooldown > 0) {
+            scanCooldown--;
+            return;
+        }
         Entity camera = mc.getRenderViewEntity();
         double range = range();
+        scanCooldown = range >= 48.0D ? 3 : 1;
         Vec3 start = camera.getPositionEyes(1.0F);
         Vec3 look = camera.getLook(1.0F);
         Vec3 end = start.addVector(look.xCoord * range, look.yCoord * range, look.zCoord * range);
@@ -154,6 +165,11 @@ final class TargetHealthElement implements HudElement {
 
     private EntityLivingBase findTarget() {
         Minecraft mc = Minecraft.getMinecraft();
+        EntityLivingBase direct = directTarget(mc);
+        return direct != null ? direct : distantTarget != null && !distantTarget.isDead ? distantTarget : null;
+    }
+
+    private static EntityLivingBase directTarget(Minecraft mc) {
         MovingObjectPosition hit = mc.objectMouseOver;
         if (hit != null && hit.entityHit instanceof EntityLivingBase && hit.entityHit != mc.thePlayer) {
             return (EntityLivingBase) hit.entityHit;
@@ -162,7 +178,7 @@ final class TargetHealthElement implements HudElement {
         if (entity instanceof EntityLivingBase && entity != mc.thePlayer) {
             return (EntityLivingBase) entity;
         }
-        return distantTarget == mc.thePlayer ? null : distantTarget;
+        return null;
     }
 
     @Override
@@ -201,9 +217,8 @@ final class TargetHealthElement implements HudElement {
         int barWidth = BAR_WIDTH - inset;
         Gui.drawRect(x, 0, x + WIDTH, HEIGHT, backgroundColor());
         Gui.drawRect(x, 0, x + WIDTH, 1, 0xFF000000 | Option.rgb(TargetHealthMod.settings.accentColor));
-        String clippedName = font.trimStringToWidth(name, barWidth);
         if (TargetHealthMod.settings.showName) {
-            font.drawStringWithShadow(clippedName, x + 3 + inset, 4, 0xFFFFFF);
+            font.drawStringWithShadow(name, x + 3 + inset, 4, 0xFFFFFF);
         }
 
         int barX = x + 3 + inset;
@@ -253,14 +268,14 @@ final class TargetHealthElement implements HudElement {
             }
         }
         if (TargetHealthMod.settings.showNumbers) {
-            font.drawStringWithShadow(format(health) + " / " + format(maximum), x + 3, 27, 0xFFFFFF);
+            font.drawStringWithShadow(healthText, x + 3, 27, 0xFFFFFF);
         }
     }
 
     private void drawCompact(FontRenderer font, int x, int width) {
         Gui.drawRect(x, 0, x + width, height(), backgroundColor());
         Gui.drawRect(x, 0, x + width, 1, 0xFF000000 | Option.rgb(TargetHealthMod.settings.accentColor));
-        String value = format(health) + "/" + format(maximum);
+        String value = healthText;
         int valueWidth = font.getStringWidth(value);
         if (TargetHealthMod.settings.showName) {
             font.drawStringWithShadow(font.trimStringToWidth(name, width - valueWidth - 8), x + 3, 4, 0xFFFFFF);
@@ -288,8 +303,7 @@ final class TargetHealthElement implements HudElement {
         }
         Gui.drawRect(x, 0, x + width, 1, 0xFF000000 | Option.rgb(TargetHealthMod.settings.accentColor));
         if (TargetHealthMod.settings.showNumbers) {
-            String value = format(health) + "/" + format(maximum);
-            font.drawStringWithShadow(value, x + (width - font.getStringWidth(value)) / 2, 0, 0xFFFFFF);
+            font.drawStringWithShadow(healthText, x + (width - font.getStringWidth(healthText)) / 2, 0, 0xFFFFFF);
         }
     }
 
