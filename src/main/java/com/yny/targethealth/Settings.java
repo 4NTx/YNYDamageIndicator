@@ -21,7 +21,7 @@ final class Settings {
     boolean showAbsorption = true;
     boolean showDistantTargets = true;
     boolean ignoreLeaves = true;
-    boolean dynamicHealthColor = true;
+    boolean dynamicHealthColor = false;
     int rangeIndex = 2;
     int opacityIndex = 2;
     int templateIndex;

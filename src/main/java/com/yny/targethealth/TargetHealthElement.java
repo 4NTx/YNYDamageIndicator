@@ -240,6 +240,12 @@ final class TargetHealthElement implements HudElement {
         for (int index = 0; index < 10; index++) {
             font.drawStringWithShadow("❤", x + 3 + index * 12, 17, index < filled ? color : 0xFF4A3030);
         }
+        if (TargetHealthMod.settings.showAbsorption && absorption > 0.0F) {
+            int extra = Math.min(10 - filled, (int) Math.ceil(absorption / 2.0F));
+            for (int index = 0; index < extra; index++) {
+                font.drawStringWithShadow("❤", x + 3 + (filled + index) * 12, 17, 0xFFE7BE43);
+            }
+        }
         if (TargetHealthMod.settings.showNumbers) {
             font.drawStringWithShadow(format(health) + " / " + format(maximum), x + 3, 27, 0xFFFFFF);
         }
@@ -247,6 +253,7 @@ final class TargetHealthElement implements HudElement {
 
     private void drawCompact(FontRenderer font, int x, int width) {
         Gui.drawRect(x, 0, x + width, height(), backgroundColor());
+        Gui.drawRect(x, 0, x + width, 1, 0xFF000000 | Option.rgb(TargetHealthMod.settings.accentColor));
         String value = format(health) + "/" + format(maximum);
         int valueWidth = font.getStringWidth(value);
         if (TargetHealthMod.settings.showName) {
@@ -258,13 +265,22 @@ final class TargetHealthElement implements HudElement {
         int filled = Math.round((width - 6) * Math.min(health / maximum, 1.0F));
         Gui.drawRect(x + 3, 15, x + width - 3, 17, 0xFF3B2020);
         Gui.drawRect(x + 3, 15, x + 3 + filled, 17, barColor(health / maximum));
+        if (TargetHealthMod.settings.showAbsorption && absorption > 0.0F) {
+            int extra = Math.round((width - 6) * Math.min(absorption / maximum, 1.0F));
+            Gui.drawRect(x + 3 + filled, 15, Math.min(x + width - 3, x + 3 + filled + extra), 17, 0xFFE7BE43);
+        }
     }
 
     private void drawMinimal(FontRenderer font, int x, int width) {
         int color = barColor(health / maximum);
         int filled = Math.round(width * Math.min(health / maximum, 1.0F));
-        Gui.drawRect(x, 0, x + width, height(), 0xA0000000);
+        Gui.drawRect(x, 0, x + width, height(), backgroundColor());
         Gui.drawRect(x, 0, x + filled, height(), color);
+        if (TargetHealthMod.settings.showAbsorption && absorption > 0.0F) {
+            int extra = Math.round(width * Math.min(absorption / maximum, 1.0F));
+            Gui.drawRect(x + filled, 0, Math.min(x + width, x + filled + extra), height(), 0xFFE7BE43);
+        }
+        Gui.drawRect(x, 0, x + width, 1, 0xFF000000 | Option.rgb(TargetHealthMod.settings.accentColor));
         if (TargetHealthMod.settings.showNumbers) {
             String value = format(health) + "/" + format(maximum);
             font.drawStringWithShadow(value, x + (width - font.getStringWidth(value)) / 2, 0, 0xFFFFFF);

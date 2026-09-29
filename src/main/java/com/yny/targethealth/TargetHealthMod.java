@@ -74,6 +74,7 @@ public final class TargetHealthMod implements SteinMod {
             }))
             .option(Option.color("Cor da vida", () -> settings.healthColor, value -> {
                 settings.healthColor = value;
+                settings.dynamicHealthColor = false;
                 Settings.save(settings);
             }))
             .option(Option.cycle("Opacidade do fundo", OPACITIES, () -> settings.opacityIndex, value -> {
