@@ -5,6 +5,8 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockLeaves;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.AxisAlignedBB;
@@ -42,8 +44,7 @@ final class TargetHealthElement implements HudElement {
         Vec3 look = camera.getLook(1.0F);
         Vec3 end = start.addVector(look.xCoord * VISUAL_RANGE, look.yCoord * VISUAL_RANGE,
                 look.zCoord * VISUAL_RANGE);
-        MovingObjectPosition block = mc.theWorld.rayTraceBlocks(start, end, false, false, true);
-        double limit = block == null ? VISUAL_RANGE : start.distanceTo(block.hitVec);
+        double limit = blockDistance(mc, start, end, look);
         EntityLivingBase nearest = null;
         double nearestDistance = limit;
         List<?> entities = mc.theWorld.loadedEntityList;
@@ -68,6 +69,23 @@ final class TargetHealthElement implements HudElement {
             }
         }
         distantTarget = nearest;
+    }
+
+    private static double blockDistance(Minecraft mc, Vec3 start, Vec3 end, Vec3 direction) {
+        Vec3 origin = start;
+        for (int pass = 0; pass < 64; pass++) {
+            MovingObjectPosition hit = mc.theWorld.rayTraceBlocks(origin, end, false, false, true);
+            if (hit == null) {
+                return VISUAL_RANGE;
+            }
+            Block block = mc.theWorld.getBlockState(hit.getBlockPos()).getBlock();
+            if (!(block instanceof BlockLeaves)) {
+                return start.distanceTo(hit.hitVec);
+            }
+            origin = hit.hitVec.addVector(direction.xCoord * 0.01D, direction.yCoord * 0.01D,
+                    direction.zCoord * 0.01D);
+        }
+        return VISUAL_RANGE;
     }
 
     void updateTarget() {
