@@ -24,6 +24,7 @@ final class Settings {
     boolean dynamicHealthColor = true;
     int rangeIndex = 2;
     int opacityIndex = 2;
+    int templateIndex;
     String accentColor = "c";
     String healthColor = "a";
 

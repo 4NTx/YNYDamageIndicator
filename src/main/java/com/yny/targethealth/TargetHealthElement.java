@@ -166,19 +166,35 @@ final class TargetHealthElement implements HudElement {
 
     @Override
     public int width() {
-        return WIDTH;
+        int template = template();
+        return template == 2 ? 104 : template == 3 ? 88 : WIDTH;
     }
 
     @Override
     public int height() {
-        return HEIGHT;
+        int template = template();
+        return template == 1 ? 35 : template == 2 ? 20 : template == 3 ? 8 : HEIGHT;
     }
 
     @Override
     public void draw(boolean alignRight, float partialTicks) {
         Minecraft mc = Minecraft.getMinecraft();
         FontRenderer font = mc.fontRendererObj;
-        int x = alignRight ? -WIDTH : 0;
+        int width = width();
+        int x = alignRight ? -width : 0;
+        int template = template();
+        if (template == 1) {
+            drawHearts(font, x, width);
+            return;
+        }
+        if (template == 2) {
+            drawCompact(font, x, width);
+            return;
+        }
+        if (template == 3) {
+            drawMinimal(font, x, width);
+            return;
+        }
 
         Gui.drawRect(x, 0, x + WIDTH, HEIGHT, backgroundColor());
         Gui.drawRect(x, 0, x + WIDTH, 1, 0xFF000000 | Option.rgb(TargetHealthMod.settings.accentColor));
@@ -211,6 +227,52 @@ final class TargetHealthElement implements HudElement {
         if (percent > 0.5F) return 0xFF45B85A;
         if (percent > 0.25F) return 0xFFE0A93B;
         return 0xFFCF4848;
+    }
+
+    private void drawHearts(FontRenderer font, int x, int width) {
+        Gui.drawRect(x, 0, x + width, height(), backgroundColor());
+        Gui.drawRect(x, 0, x + width, 1, 0xFF000000 | Option.rgb(TargetHealthMod.settings.accentColor));
+        if (TargetHealthMod.settings.showName) {
+            font.drawStringWithShadow(font.trimStringToWidth(name, width - 6), x + 3, 4, 0xFFFFFF);
+        }
+        int filled = Math.min(10, (int) Math.ceil(health / 2.0F));
+        int color = barColor(health / maximum);
+        for (int index = 0; index < 10; index++) {
+            font.drawStringWithShadow("❤", x + 3 + index * 12, 17, index < filled ? color : 0xFF4A3030);
+        }
+        if (TargetHealthMod.settings.showNumbers) {
+            font.drawStringWithShadow(format(health) + " / " + format(maximum), x + 3, 27, 0xFFFFFF);
+        }
+    }
+
+    private void drawCompact(FontRenderer font, int x, int width) {
+        Gui.drawRect(x, 0, x + width, height(), backgroundColor());
+        String value = format(health) + "/" + format(maximum);
+        int valueWidth = font.getStringWidth(value);
+        if (TargetHealthMod.settings.showName) {
+            font.drawStringWithShadow(font.trimStringToWidth(name, width - valueWidth - 8), x + 3, 4, 0xFFFFFF);
+        }
+        if (TargetHealthMod.settings.showNumbers) {
+            font.drawStringWithShadow(value, x + width - valueWidth - 3, 4, barColor(health / maximum));
+        }
+        int filled = Math.round((width - 6) * Math.min(health / maximum, 1.0F));
+        Gui.drawRect(x + 3, 15, x + width - 3, 17, 0xFF3B2020);
+        Gui.drawRect(x + 3, 15, x + 3 + filled, 17, barColor(health / maximum));
+    }
+
+    private void drawMinimal(FontRenderer font, int x, int width) {
+        int color = barColor(health / maximum);
+        int filled = Math.round(width * Math.min(health / maximum, 1.0F));
+        Gui.drawRect(x, 0, x + width, height(), 0xA0000000);
+        Gui.drawRect(x, 0, x + filled, height(), color);
+        if (TargetHealthMod.settings.showNumbers) {
+            String value = format(health) + "/" + format(maximum);
+            font.drawStringWithShadow(value, x + (width - font.getStringWidth(value)) / 2, 0, 0xFFFFFF);
+        }
+    }
+
+    private static int template() {
+        return Math.max(0, Math.min(TargetHealthMod.settings.templateIndex, 3));
     }
 
     private static double range() {

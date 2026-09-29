@@ -10,6 +10,7 @@ public final class TargetHealthMod implements SteinMod {
     static final String ID = "ynydamageindicator";
     private static final String[] RANGES = {"8 blocos", "16 blocos", "32 blocos", "48 blocos", "64 blocos"};
     private static final String[] OPACITIES = {"Baixa", "Média", "Alta", "Sólida"};
+    private static final String[] TEMPLATES = {"Clássico", "Corações", "Compacto", "Minimalista"};
     static Settings settings = new Settings();
 
     private final TargetHealthElement element = new TargetHealthElement();
@@ -59,6 +60,10 @@ public final class TargetHealthMod implements SteinMod {
                 Settings.save(settings);
             }))
             .section("Aparência")
+            .option(Option.cycle("Estilo da HUD", TEMPLATES, () -> settings.templateIndex, value -> {
+                settings.templateIndex = value;
+                Settings.save(settings);
+            }))
             .option(Option.color("Cor de destaque", () -> settings.accentColor, value -> {
                 settings.accentColor = value;
                 Settings.save(settings);
