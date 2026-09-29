@@ -15,6 +15,7 @@ import net.minecraft.util.Vec3;
 
 import dev.xavier.stein.loader.api.HudElement;
 import dev.xavier.stein.loader.api.HudPlacement;
+import dev.xavier.stein.loader.api.Option;
 
 final class TargetHealthElement implements HudElement {
 
@@ -22,7 +23,8 @@ final class TargetHealthElement implements HudElement {
     private static final int HEIGHT = 31;
     private static final int BAR_WIDTH = 126;
     private static final int BAR_HEIGHT = 6;
-    private static final double VISUAL_RANGE = 32.0D;
+    private static final double[] RANGES = {8.0D, 16.0D, 32.0D, 48.0D, 64.0D};
+    private static final int[] OPACITIES = {90, 130, 176, 220};
 
     private EntityLivingBase target;
     private EntityLivingBase namedTarget;
@@ -39,12 +41,16 @@ final class TargetHealthElement implements HudElement {
             distantTarget = null;
             return;
         }
+        if (!TargetHealthMod.settings.showDistantTargets) {
+            distantTarget = null;
+            return;
+        }
         Entity camera = mc.getRenderViewEntity();
+        double range = range();
         Vec3 start = camera.getPositionEyes(1.0F);
         Vec3 look = camera.getLook(1.0F);
-        Vec3 end = start.addVector(look.xCoord * VISUAL_RANGE, look.yCoord * VISUAL_RANGE,
-                look.zCoord * VISUAL_RANGE);
-        double limit = blockDistance(mc, start, end, look);
+        Vec3 end = start.addVector(look.xCoord * range, look.yCoord * range, look.zCoord * range);
+        double limit = blockDistance(mc, start, end, look, range);
         EntityLivingBase nearest = null;
         double nearestDistance = limit;
         List<?> entities = mc.theWorld.loadedEntityList;
@@ -71,21 +77,21 @@ final class TargetHealthElement implements HudElement {
         distantTarget = nearest;
     }
 
-    private static double blockDistance(Minecraft mc, Vec3 start, Vec3 end, Vec3 direction) {
+    private static double blockDistance(Minecraft mc, Vec3 start, Vec3 end, Vec3 direction, double range) {
         Vec3 origin = start;
         for (int pass = 0; pass < 64; pass++) {
             MovingObjectPosition hit = mc.theWorld.rayTraceBlocks(origin, end, false, false, true);
             if (hit == null) {
-                return VISUAL_RANGE;
+                return range;
             }
             Block block = mc.theWorld.getBlockState(hit.getBlockPos()).getBlock();
-            if (!(block instanceof BlockLeaves)) {
+            if (!TargetHealthMod.settings.ignoreLeaves || !(block instanceof BlockLeaves)) {
                 return start.distanceTo(hit.hitVec);
             }
             origin = hit.hitVec.addVector(direction.xCoord * 0.01D, direction.yCoord * 0.01D,
                     direction.zCoord * 0.01D);
         }
-        return VISUAL_RANGE;
+        return range;
     }
 
     void updateTarget() {
@@ -168,16 +174,18 @@ final class TargetHealthElement implements HudElement {
         FontRenderer font = mc.fontRendererObj;
         int x = alignRight ? -WIDTH : 0;
 
-        Gui.drawRect(x, 0, x + WIDTH, HEIGHT, 0xB0101010);
-        Gui.drawRect(x, 0, x + WIDTH, 1, 0xFFB83B3B);
+        Gui.drawRect(x, 0, x + WIDTH, HEIGHT, backgroundColor());
+        Gui.drawRect(x, 0, x + WIDTH, 1, 0xFF000000 | Option.rgb(TargetHealthMod.settings.accentColor));
         String clippedName = font.trimStringToWidth(name, BAR_WIDTH);
-        font.drawStringWithShadow(clippedName, x + 3, 4, 0xFFFFFF);
+        if (TargetHealthMod.settings.showName) {
+            font.drawStringWithShadow(clippedName, x + 3, 4, 0xFFFFFF);
+        }
 
         int barX = x + 3;
         int barY = 18;
         Gui.drawRect(barX, barY, barX + BAR_WIDTH, barY + BAR_HEIGHT, 0xFF3B2020);
         int filled = Math.round(BAR_WIDTH * Math.min(health / maximum, 1.0F));
-        Gui.drawRect(barX, barY, barX + filled, barY + BAR_HEIGHT, healthColor(health / maximum));
+        Gui.drawRect(barX, barY, barX + filled, barY + BAR_HEIGHT, barColor(health / maximum));
 
         if (TargetHealthMod.settings.showAbsorption && absorption > 0.0F) {
             int absorptionWidth = Math.round(BAR_WIDTH * Math.min(absorption / maximum, 1.0F));
@@ -197,6 +205,22 @@ final class TargetHealthElement implements HudElement {
         if (percent > 0.5F) return 0xFF45B85A;
         if (percent > 0.25F) return 0xFFE0A93B;
         return 0xFFCF4848;
+    }
+
+    private static double range() {
+        int index = TargetHealthMod.settings.rangeIndex;
+        return RANGES[Math.max(0, Math.min(index, RANGES.length - 1))];
+    }
+
+    private static int backgroundColor() {
+        int index = TargetHealthMod.settings.opacityIndex;
+        int alpha = OPACITIES[Math.max(0, Math.min(index, OPACITIES.length - 1))];
+        return alpha << 24 | 0x101010;
+    }
+
+    private static int barColor(float percent) {
+        return TargetHealthMod.settings.dynamicHealthColor ? healthColor(percent)
+                : 0xFF000000 | Option.rgb(TargetHealthMod.settings.healthColor);
     }
 
     @Override

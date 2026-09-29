@@ -16,8 +16,16 @@ final class Settings {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     boolean enabled = true;
+    boolean showName = true;
     boolean showNumbers = true;
     boolean showAbsorption = true;
+    boolean showDistantTargets = true;
+    boolean ignoreLeaves = true;
+    boolean dynamicHealthColor = true;
+    int rangeIndex = 2;
+    int opacityIndex = 2;
+    String accentColor = "c";
+    String healthColor = "a";
 
     static Settings load() {
         File file = file();
