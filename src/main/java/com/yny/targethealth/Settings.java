@@ -17,7 +17,6 @@ final class Settings {
 
     boolean enabled = true;
     boolean showName = true;
-    boolean showEntityIcon = true;
     boolean showNumbers = true;
     boolean showAbsorption = true;
     boolean showDistantTargets = true;

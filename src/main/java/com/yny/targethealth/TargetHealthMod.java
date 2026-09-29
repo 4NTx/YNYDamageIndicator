@@ -38,10 +38,6 @@ public final class TargetHealthMod implements SteinMod {
                 settings.showName = value;
                 Settings.save(settings);
             }))
-            .option(Option.toggle("Mostrar miniatura do alvo", () -> settings.showEntityIcon, value -> {
-                settings.showEntityIcon = value;
-                Settings.save(settings);
-            }))
             .option(Option.toggle("Mostrar vida em números", () -> settings.showNumbers, value -> {
                 settings.showNumbers = value;
                 Settings.save(settings);

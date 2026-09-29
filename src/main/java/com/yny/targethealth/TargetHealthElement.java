@@ -5,7 +5,6 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBush;
 import net.minecraft.block.BlockLeaves;
@@ -213,15 +212,14 @@ final class TargetHealthElement implements HudElement {
             return;
         }
 
-        int inset = TargetHealthMod.settings.showEntityIcon && target != null ? 24 : 0;
-        int barWidth = BAR_WIDTH - inset;
+        int barWidth = BAR_WIDTH;
         Gui.drawRect(x, 0, x + WIDTH, HEIGHT, backgroundColor());
         Gui.drawRect(x, 0, x + WIDTH, 1, 0xFF000000 | Option.rgb(TargetHealthMod.settings.accentColor));
         if (TargetHealthMod.settings.showName) {
-            font.drawStringWithShadow(name, x + 3 + inset, 4, 0xFFFFFF);
+            font.drawStringWithShadow(name, x + 3, 4, 0xFFFFFF);
         }
 
-        int barX = x + 3 + inset;
+        int barX = x + 3;
         int barY = 18;
         Gui.drawRect(barX, barY, barX + barWidth, barY + BAR_HEIGHT, 0xFF3B2020);
         int filled = Math.round(barWidth * Math.min(health / maximum, 1.0F));
@@ -234,9 +232,6 @@ final class TargetHealthElement implements HudElement {
         }
         if (TargetHealthMod.settings.showNumbers) {
             font.drawStringWithShadow(healthText, x + WIDTH - 3 - font.getStringWidth(healthText), 4, 0xFFFFFF);
-        }
-        if (inset > 0) {
-            GuiInventory.drawEntityOnScreen(x + 14, 28, 11, 0.0F, 0.0F, target);
         }
     }
 
@@ -256,13 +251,13 @@ final class TargetHealthElement implements HudElement {
         if (TargetHealthMod.settings.showName) {
             font.drawStringWithShadow(font.trimStringToWidth(name, width - 6), x + 3, 4, 0xFFFFFF);
         }
-        int filled = Math.min(10, (int) Math.ceil(health / 2.0F));
+        int filled = Math.min(10, (int) Math.ceil(10.0F * health / maximum));
         int color = barColor(health / maximum);
         for (int index = 0; index < 10; index++) {
             font.drawStringWithShadow("❤", x + 3 + index * 12, 17, index < filled ? color : 0xFF4A3030);
         }
         if (TargetHealthMod.settings.showAbsorption && absorption > 0.0F) {
-            int extra = Math.min(10 - filled, (int) Math.ceil(absorption / 2.0F));
+            int extra = Math.min(10 - filled, (int) Math.ceil(10.0F * absorption / maximum));
             for (int index = 0; index < extra; index++) {
                 font.drawStringWithShadow("❤", x + 3 + (filled + index) * 12, 17, 0xFFE7BE43);
             }

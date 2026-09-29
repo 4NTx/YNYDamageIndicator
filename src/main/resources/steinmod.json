@@ -1,7 +1,7 @@
 {
   "id": "ynydamageindicator",
   "name": "YNYDamageIndicator",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "author": "Artur",
   "description": "Mostra na HUD o nome e a vida do alvo sob a mira.",
   "entry": "com.yny.targethealth.TargetHealthMod",
