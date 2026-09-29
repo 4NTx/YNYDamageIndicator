@@ -53,7 +53,7 @@ final class TargetHealthElement implements HudElement {
                 continue;
             }
             EntityLivingBase candidate = (EntityLivingBase) value;
-            if (candidate.isDead || !candidate.canBeCollidedWith()) {
+            if (candidate == camera || candidate == mc.thePlayer || candidate.isDead || !candidate.canBeCollidedWith()) {
                 continue;
             }
             AxisAlignedBB box = candidate.getEntityBoundingBox().expand(0.3D, 0.3D, 0.3D);
@@ -124,14 +124,14 @@ final class TargetHealthElement implements HudElement {
     private EntityLivingBase findTarget() {
         Minecraft mc = Minecraft.getMinecraft();
         MovingObjectPosition hit = mc.objectMouseOver;
-        if (hit != null && hit.entityHit instanceof EntityLivingBase) {
+        if (hit != null && hit.entityHit instanceof EntityLivingBase && hit.entityHit != mc.thePlayer) {
             return (EntityLivingBase) hit.entityHit;
         }
         Entity entity = mc.pointedEntity;
-        if (entity instanceof EntityLivingBase) {
+        if (entity instanceof EntityLivingBase && entity != mc.thePlayer) {
             return (EntityLivingBase) entity;
         }
-        return distantTarget;
+        return distantTarget == mc.thePlayer ? null : distantTarget;
     }
 
     @Override
