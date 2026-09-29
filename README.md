@@ -7,6 +7,7 @@ Mod client-side para Stein Loader no Minecraft 1.8.9. Ao mirar em jogadores, mob
 - Alcance visual de até 32 blocos, respeitando paredes.
 - HUD movível, escalável e ocultável pelo editor do Stein Loader.
 - Quatro estilos visuais: Clássico, Corações, Compacto e Minimalista.
+- Miniatura 3D opcional do alvo no estilo Clássico.
 - Opções para nome, números, absorção, alvos distantes, alcance visual, folhagem, cores e opacidade.
 - Configurações salvas em `config/ynydamageindicator.json`.
 - Não altera alcance de ataque, cliques ou pacotes.

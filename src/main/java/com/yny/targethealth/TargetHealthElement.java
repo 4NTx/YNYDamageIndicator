@@ -5,6 +5,7 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBush;
 import net.minecraft.block.BlockLeaves;
@@ -196,26 +197,31 @@ final class TargetHealthElement implements HudElement {
             return;
         }
 
+        int inset = TargetHealthMod.settings.showEntityIcon && target != null ? 24 : 0;
+        int barWidth = BAR_WIDTH - inset;
         Gui.drawRect(x, 0, x + WIDTH, HEIGHT, backgroundColor());
         Gui.drawRect(x, 0, x + WIDTH, 1, 0xFF000000 | Option.rgb(TargetHealthMod.settings.accentColor));
-        String clippedName = font.trimStringToWidth(name, BAR_WIDTH);
+        String clippedName = font.trimStringToWidth(name, barWidth);
         if (TargetHealthMod.settings.showName) {
-            font.drawStringWithShadow(clippedName, x + 3, 4, 0xFFFFFF);
+            font.drawStringWithShadow(clippedName, x + 3 + inset, 4, 0xFFFFFF);
         }
 
-        int barX = x + 3;
+        int barX = x + 3 + inset;
         int barY = 18;
-        Gui.drawRect(barX, barY, barX + BAR_WIDTH, barY + BAR_HEIGHT, 0xFF3B2020);
-        int filled = Math.round(BAR_WIDTH * Math.min(health / maximum, 1.0F));
+        Gui.drawRect(barX, barY, barX + barWidth, barY + BAR_HEIGHT, 0xFF3B2020);
+        int filled = Math.round(barWidth * Math.min(health / maximum, 1.0F));
         Gui.drawRect(barX, barY, barX + filled, barY + BAR_HEIGHT, barColor(health / maximum));
 
         if (TargetHealthMod.settings.showAbsorption && absorption > 0.0F) {
-            int absorptionWidth = Math.round(BAR_WIDTH * Math.min(absorption / maximum, 1.0F));
-            Gui.drawRect(barX + filled, barY, Math.min(barX + BAR_WIDTH, barX + filled + absorptionWidth),
+            int absorptionWidth = Math.round(barWidth * Math.min(absorption / maximum, 1.0F));
+            Gui.drawRect(barX + filled, barY, Math.min(barX + barWidth, barX + filled + absorptionWidth),
                     barY + BAR_HEIGHT, 0xFFE7BE43);
         }
         if (TargetHealthMod.settings.showNumbers) {
             font.drawStringWithShadow(healthText, x + WIDTH - 3 - font.getStringWidth(healthText), 4, 0xFFFFFF);
+        }
+        if (inset > 0) {
+            GuiInventory.drawEntityOnScreen(x + 14, 28, 11, 0.0F, 0.0F, target);
         }
     }
 
